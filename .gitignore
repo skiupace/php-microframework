@@ -1,0 +1,16 @@
+# folders
+/.phpunit.cache
+/node_modules
+/vendor
+/.fleet
+/.idea
+/.nova
+/.vscode
+/.zedg
+
+# files
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+composer.lock
