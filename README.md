@@ -56,7 +56,8 @@ Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/skiupace/php-microframework.git && \
 cd php-microframework && \
-composer install
+composer install && \
+php -S localhost:8888 -t public
 ```
 
 ## Bootstrapping
