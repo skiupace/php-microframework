@@ -60,7 +60,7 @@ class Router
         // $matches[0] is the full matched string, so skip it.
         $params = \array_slice($matches, 1);
 
-        $controller = base_path($route['controller']);
+        $controller = base_path("Http/controllers/{$route['controller']}");
 
         if (!file_exists($controller)) {
           $this->abort(Response::INTERNAL_SERVER_ERROR);

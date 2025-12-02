@@ -6,7 +6,7 @@ use PDO;
 
 class Database
 {
-  public function __construct($config, $username = 'pma', $password = 'pmapass')
+  public function __construct($config, $username = 'root', $password = '')
   {
     $dsn = 'mysql:' . http_build_query($config, '', ';');
     $this->conn = new PDO($dsn, $username, $password, [
