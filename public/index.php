@@ -6,6 +6,17 @@ use Core\ValidationException;
 const BASE_PATH = __DIR__ . '/../';
 require BASE_PATH . 'vendor/autoload.php';
 
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
+//* File Upload Snippet using the newly added file storage api.
+/**
+ * \Core\Storage::resolve()->put('hello.txt', 'Hello, World!');
+ * echo 'Done!';
+ */
+
 session_start();
 
 require BASE_PATH . 'Core/functions.php';

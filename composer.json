@@ -3,7 +3,9 @@
   "description": "very simple and minimum Micro Framework built with PHP.",
   "license": "MIT",
   "require": {
-    "illuminate/collections": "^12.36"
+    "illuminate/collections": "^12.36",
+    "vlucas/phpdotenv": "^5.6",
+    "aws/aws-sdk-php": "^3.369"
   },
   "autoload": {
     "psr-4": {
