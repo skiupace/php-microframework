@@ -2,8 +2,8 @@
 
 return [
   'database' => [
-    'host'      => 'localhost',
-    'dbname'    => 'myapp',
-    'charset'   => 'utf8mb4'
+    'host' => $_ENV['DATABASE_HOST'],
+    'dbname' => $_ENV['DATABASE_NAME'],
+    'charset' => $_ENV['DATABASE_CHARSET']
   ]
 ];

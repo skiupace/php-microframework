@@ -11,7 +11,9 @@ A minimal, dependency-light PHP microframework skeleton. This repository provide
 - [App container API](#app-container-api)
 - [Accessing the Database](#accessing-the-database)
 - [Routes and Router](#routes-and-router)
+- [Environment variables](#environment-variables)
 - [Configuration](#configuration)
+- [File Storage API](#file-storage-api)
 - [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
@@ -22,10 +24,15 @@ A minimal, dependency-light PHP microframework skeleton. This repository provide
 Top-level files and folders in the repository:
 
 - .gitignore
-- Core/ — core framework classes (App, Container, Database, Router, Validator, Session, Response, Authenticator, exceptions, helpers)
+- Core/ — core framework classes (App, Container, Database, Router, Validator, Session, Response, Authenticator, exceptions, helpers, etc...)
   - Core/App.php
   - Core/Container.php
   - Core/Database.php
+  - Core/FileStorage.php - a thin facade / helper that delegates to the configured driver.
+  - Core/FileStorageDriver.php - the driver interface (contract) every storage adapter must implement.
+  - Core/LocalStorage.php - local filesystem implementation of the driver.
+  - Core/S3Storage.php - an Amazon S3 implementation that uses `aws/aws-sdk-php`.
+  - Core/Storage.php - an optional factory that decides which driver to instantiate based on `FILE_STORAGE_DRIVER` value.
   - Core/Router.php
   - Core/Validator.php
   - Core/Session.php
@@ -35,17 +42,17 @@ Top-level files and folders in the repository:
   - Core/functions.php
   - Core/Middleware/ (middleware hooks)
 - Http/ — HTTP layer (request/response helpers, middleware, adapters)
-- bootstrap.php — bootstraps the Container and binds Database into it
+- bootstrap.php - bootstraps the Container and binds Database into it
 - composer.json
-- config.php — returns an array with the configuration for db and api keys (do not push into prod)
-- public/ — document root / front controller (not populated in the repo root)
-- routes.php — application route declarations
-- tests/ — test cases
-- views/ — templates
+- config.php - returns an array with the configuration for db and api keys (do not push into prod)
+- public/ - document root / front controller (not populated in the repo root)
+- routes.php - application route declarations
+- tests/ - test cases
+- views/ - templates
 
 ## Requirements
 
-- PHP 8.0+ (check composer.json for any platform constraints)
+- PHP 8.4+ (check composer.json for any platform constraints)
 - Composer for autoloading and installing dependencies
 - Typical PHP extensions (json, mbstring, etc.)
 
@@ -123,6 +130,39 @@ Adjust usage based on the public methods exposed by Core\Database (see Core/Data
 
 Place route definitions in routes.php and ensure your front controller requires it after bootstrapping.
 
+## Environment variables
+
+This project now uses `vlucas/phpdotenv` to manage environment variables. Add a `.env` file to the project root to configure secrets and environment-specific settings.
+
+Here's `.env.local` file which is a general template that after creating your project, do:
+
+```bash
+cp .env.local .env
+```
+
+To make a second clone of it, then change it to your projects needs:
+
+```.env
+APP_ENV=development
+APP_DEBUG=true
+
+FILE_STORAGE_DRIVER=local
+FILE_STORAGE_LOCAL_PATH=storage/
+
+DATABASE_DRIVER=sqlite
+# DATABASE_HOST=localhost
+# DATABASE_NAME=myapp
+# DATABASE_CHARSET=utf8mb4
+# DATABASE_USERNAME=root
+# DATABASE_PASSWORD=
+
+# AWS_ACCESS_KEY_ID=
+# AWS_SECRET_ACCESS_KEY=
+# AWS_DEFAULT_REGION=
+# AWS_DEFAULT_ENDPOINT=
+# AWS_BUCKET=
+```
+
 ## Configuration
 
 config.php should return an associative array. bootstrap.php expects the following structure at minimum:
@@ -138,6 +178,33 @@ return [
 ```
 
 Edit config.php to match the connection options required by Core\Database.
+
+## File Storage API
+
+The API is intentionally simple. Common methods available on the driver and facade:
+
+- put(string $path, string $contents): bool
+- get(string $path): ?string
+
+Snippet of usage:
+
+```php
+// File Upload Snippet using the newly added file storage api.
+\Core\Storage::resolve()->put('file.txt', 'Hello, World!');
+```
+
+To get files:
+
+```php
+$savePath = __DIR__ . '/storage/hello-s3.txt';
+
+if (!is_dir(dirname($savePath))) {
+  mkdir(dirname($savePath), 0777, true);
+}
+
+file_put_contents($savePath, $s3File);
+echo 'Done!';
+```
 
 ## Testing
 
